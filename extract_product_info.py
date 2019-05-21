@@ -22,7 +22,7 @@ def product_to_soup(product):
     return s
     
 
-dir_name = os.listdir()[0]
+dir_name = input('type the name of the directory here: ')
 products = get_products(dir_name)
 
 # Create empty lists for gathering info

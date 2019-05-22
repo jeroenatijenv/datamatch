@@ -22,7 +22,7 @@ def product_to_soup(product):
     return s
     
 
-dir_name = input('type the name of the directory here: ')
+dir_name = os.listdir()[0]
 products = get_products(dir_name)
 
 # Create empty lists for gathering info
@@ -31,11 +31,26 @@ product_title = []
 member_name = []
 successful_transactions = []
 seller_status = []
+price = []
+ships_from = []
 extended_info = []
 
 # Loop through products in directory
 for i, product in enumerate(products):
     soup = product_to_soup(product)
+
+    # Get price and shipsfrom loc
+    price_and_shipsfrom = soup.select('label')
+    for lab in price_and_shipsfrom:
+        if lab.text == 'Price':
+            price.append(lab.find_next_sibling().string.strip())
+        elif lab.text == 'Ships from':
+            ships_from.append(lab.find_next_sibling().string.strip())
+
+    # append empty value for observations without a value for 'ships from'
+    if 'Ships from' not in [i.string for i in soup.select('label')]:
+        ships_from.append('')
+
     
     product_index.append(i)
     product_title.append(soup.select('div.title')[0].string)
@@ -48,6 +63,8 @@ for i, product in enumerate(products):
 # Bundle data in dataframe
 df = pd.DataFrame({'product':product_title,
     'seller': member_name,
+    'price': price,
+    'ships_from': ships_from,
     'successful_transactions':successful_transactions,
     'seller_status':seller_status,
     'info':extended_info})
